@@ -1,5 +1,6 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const { execSync } = require('child_process');
 
 let mainWindow;
 
@@ -26,6 +27,29 @@ function createWindow() {
     mainWindow = null;
   });
 }
+
+// IPC：获取系统已安装字体
+ipcMain.handle('get-system-fonts', async () => {
+  try {
+    let cmd;
+    if (process.platform === 'win32') {
+      cmd = 'powershell -NoProfile -Command "Add-Type -AssemblyName System.Drawing; [System.Drawing.FontFamily]::Families | ForEach-Object { $_.Name }"';
+    } else if (process.platform === 'darwin') {
+      cmd = 'system_profiler SPFontsDataType | grep \'Family:\' | sed \'s/.*Family: //\' | sort -u';
+    } else {
+      cmd = 'fc-list : family | sort -u';
+    }
+    const output = execSync(cmd, { encoding: 'utf-8', timeout: 10000 });
+    const fonts = output.split('\n')
+      .map(f => f.trim())
+      .filter(f => f.length > 0 && f.length < 100)
+      .filter((f, i, arr) => arr.indexOf(f) === i);
+    return fonts;
+  } catch(e) {
+    console.error('获取系统字体失败:', e.message);
+    return [];
+  }
+});
 
 app.whenReady().then(createWindow);
 

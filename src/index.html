@@ -54,23 +54,26 @@
 
       <!-- ▸ 视图1：拼音学习 -->
       <section id="view-pinyin" class="view">
-        <div class="level-tabs" id="pinyin-tabs">
-          <button class="level-tab active" data-level="preschool">🌱 幼儿</button>
-          <button class="level-tab" data-level="elementary">📘 小学</button>
-          <button class="level-tab" data-level="advanced">🚀 进阶</button>
-        </div>
+        <div class="level-tabs" id="pinyin-tabs"></div>
         <div id="pinyin-content" class="pinyin-content"></div>
       </section>
 
       <!-- ▸ 视图2：汉字识字 -->
       <section id="view-hanzi" class="view">
         <div class="level-tabs" id="hanzi-tabs">
-          <button class="level-tab active" data-level="preschool">🌱 幼儿</button>
+          <button class="level-tab active" data-level="all">📚 全部</button>
+          <button class="level-tab" data-level="preschool">🌱 幼儿</button>
           <button class="level-tab" data-level="elementary">📘 小学</button>
           <button class="level-tab" data-level="advanced">🚀 进阶</button>
         </div>
         <div class="search-bar">
-          <input type="text" id="hanzi-search" placeholder="🔍 搜索汉字或拼音...">
+          <input type="text" id="hanzi-search" placeholder="🔍 跨级别搜索汉字或拼音...">
+        </div>
+        <div class="filter-bar" id="hanzi-filter">
+          <button class="filter-btn active" data-filter="all">全部</button>
+          <button class="filter-btn" data-filter="learned">✅ 已学习</button>
+          <button class="filter-btn" data-filter="unlearned">📝 未学习</button>
+          <button class="filter-btn filter-btn-reset" id="btn-reset-all">🔄 一键全部未学习</button>
         </div>
         <div id="hanzi-grid" class="hanzi-grid"></div>
       </section>
@@ -102,6 +105,49 @@
     </main>
   </div>
 
+  <!-- ▸ 田字格对话框 -->
+  <div id="dialog-overlay"></div>
+  <div id="hanzi-dialog">
+    <button id="dialog-close">✕</button>
+    <div class="dialog-body">
+      <div class="dialog-left">
+        <canvas id="dialog-tianzige" width="200" height="200"></canvas>
+        <div class="dialog-canvas-actions">
+          <button id="dialog-play" class="btn-dialog-play">🔊 听发音</button>
+          <button id="dialog-stroke" class="btn-dialog-stroke">✏️ 学笔画</button>
+        </div>
+        <div class="dialog-stroke-controls" id="dialog-stroke-controls" style="display:none;">
+          <div class="stroke-progress">第 <span id="stroke-current">0</span> / <span id="stroke-total">0</span> 笔</div>
+          <div class="stroke-buttons">
+            <button id="stroke-auto" class="btn-stroke-auto">▶ 自动播放</button>
+            <button id="stroke-prev" class="btn-stroke-nav">◀ 上一笔</button>
+            <button id="stroke-next" class="btn-stroke-nav">下一笔 ▶</button>
+          </div>
+        </div>
+      </div>
+      <div class="dialog-right">
+        <div class="dialog-info-grid">
+          <div class="dialog-info-cell cell-char"><div class="dialog-char-big" id="dialog-char"></div></div>
+          <div class="dialog-info-cell cell-pinyin"><div class="dialog-pinyin" id="dialog-pinyin"></div></div>
+          <div class="dialog-info-cell cell-radical">
+            <span class="info-label">部首</span>
+            <span class="info-value" id="dialog-radical"></span>
+          </div>
+          <div class="dialog-info-cell cell-strokes">
+            <span class="info-label">笔画</span>
+            <span class="info-value" id="dialog-strokes"></span>
+          </div>
+        </div>
+        <div class="dialog-bottom-actions">
+          <span class="dialog-learned" id="dialog-learned-badge"></span>
+          <button id="dialog-toggle-learned" class="btn-dialog-toggle"></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 库 -->
+  <script src="lib/hanzi-writer.min.js"></script>
   <!-- 数据 -->
   <script src="data/pinyin-data.js"></script>
   <script src="data/preschool.js"></script>
