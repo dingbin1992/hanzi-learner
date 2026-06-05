@@ -1,0 +1,502 @@
+/* ====== 全局样式 — 儿童卡通风格 ====== */
+/* ====== 本地字体 ====== */
+@font-face {
+  font-family: 'MonarchMono';
+  src: url('MonarchMono-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+:root {
+  --pink: #FF6B8A;
+  --pink-light: #FFF0F3;
+  --green: #4ECDC4;
+  --green-light: #E8FBF9;
+  --blue: #5B8DEF;
+  --blue-light: #EDF4FF;
+  --orange: #FFA94D;
+  --orange-light: #FFF6ED;
+  --yellow: #FFD93D;
+  --yellow-light: #FFFDE8;
+  --purple: #A78BFA;
+  --purple-light: #F5F0FF;
+  --bg: #FFF8F0;
+  --card-bg: #FFFFFF;
+  --text: #3D3D3D;
+  --text-light: #888;
+  --shadow: 0 4px 15px rgba(0,0,0,0.08);
+  --shadow-hover: 0 8px 25px rgba(0,0,0,0.15);
+  --radius: 18px;
+  --radius-sm: 12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'MonarchMono', 'Microsoft YaHei', 'PingFang SC', 'Noto Sans SC', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* ====== 顶部导航栏 ====== */
+#top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #FF6B8A, #FFA94D);
+  color: #fff;
+  box-shadow: 0 2px 12px rgba(255,107,138,0.3);
+  z-index: 100;
+  min-height: 60px;
+}
+
+#view-title {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.btn-icon {
+  width: 42px;
+  height: 42px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-icon:hover {
+  background: rgba(255,255,255,0.4);
+  transform: scale(1.1);
+}
+
+/* ====== 主内容区 ====== */
+#main-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+
+.view {
+  display: none;
+}
+.view.active {
+  display: block;
+  animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ====== 首页 ====== */
+.home-container {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.home-banner {
+  margin-bottom: 36px;
+  padding: 24px 0;
+}
+.banner-icon {
+  font-size: 56px;
+  display: block;
+  margin-bottom: 12px;
+  animation: bounce 2s infinite;
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+.home-banner h2 {
+  font-size: 28px;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.home-banner p {
+  font-size: 16px;
+  color: var(--text-light);
+}
+
+.home-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.home-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 32px 20px 24px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: var(--shadow);
+  border: 3px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+.home-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+}
+.home-card:active {
+  transform: scale(0.96);
+}
+.card-emoji {
+  font-size: 48px;
+  display: block;
+  margin-bottom: 14px;
+}
+.home-card h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+.home-card p {
+  font-size: 14px;
+  color: var(--text-light);
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+.card-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.card-pinyin { border-color: #FFB3C6; }
+.card-pinyin .card-badge { background: var(--pink-light); color: var(--pink); }
+.card-pinyin:hover { border-color: var(--pink); background: var(--pink-light); }
+
+.card-hanzi { border-color: #A8E6DF; }
+.card-hanzi .card-badge { background: var(--green-light); color: var(--green); }
+.card-hanzi:hover { border-color: var(--green); background: var(--green-light); }
+
+.card-practice { border-color: #B8D4FF; }
+.card-practice .card-badge { background: var(--blue-light); color: var(--blue); }
+.card-practice:hover { border-color: var(--blue); background: var(--blue-light); }
+
+.home-footer {
+  color: var(--text-light);
+  font-size: 15px;
+}
+.home-footer strong {
+  color: var(--pink);
+  font-size: 18px;
+}
+
+/* ====== 难度标签 ====== */
+.level-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.level-tab {
+  padding: 10px 28px;
+  border: 2px solid #E0E0E0;
+  border-radius: 30px;
+  background: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  color: var(--text);
+  font-family: inherit;
+}
+.level-tab:hover {
+  border-color: var(--pink);
+  background: var(--pink-light);
+}
+.level-tab.active {
+  background: var(--pink);
+  color: #fff;
+  border-color: var(--pink);
+  box-shadow: 0 4px 14px rgba(255,107,138,0.35);
+}
+
+/* ====== 拼音卡片 ====== */
+.pinyin-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.pinyin-group {
+  margin-bottom: 28px;
+}
+.pinyin-group h3 {
+  font-size: 18px;
+  color: var(--blue);
+  margin-bottom: 14px;
+  padding-left: 8px;
+  border-left: 4px solid var(--blue);
+}
+.pinyin-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.pinyin-card {
+  background: #fff;
+  border: 2px solid #EEE;
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 52px;
+  text-align: center;
+  font-family: 'MonarchMono', 'Noto Serif SC', serif;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+.pinyin-card:hover {
+  border-color: var(--orange);
+  background: var(--orange-light);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+.pinyin-card:active {
+  transform: scale(0.9);
+}
+.pinyin-card.playing {
+  border-color: var(--pink);
+  background: var(--pink-light);
+  animation: pulse 0.6s ease;
+}
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* ====== 汉字卡片 ====== */
+.search-bar {
+  max-width: 500px;
+  margin: 0 auto 24px;
+}
+.search-bar input {
+  width: 100%;
+  padding: 12px 20px;
+  border: 2px solid #E0E0E0;
+  border-radius: 30px;
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+  background: #fff;
+}
+.search-bar input:focus {
+  border-color: var(--green);
+}
+
+.hanzi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 14px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+.hanzi-card {
+  background: #fff;
+  border: 2px solid #EEE;
+  border-radius: var(--radius-sm);
+  padding: 16px 10px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.hanzi-card:hover {
+  border-color: var(--green);
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+.hanzi-card:active {
+  transform: scale(0.92);
+}
+.hanzi-card.playing {
+  border-color: var(--pink);
+  background: var(--pink-light);
+  animation: popIn 0.5s ease;
+}
+@keyframes popIn {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+.hanzi-char {
+  font-size: 42px;
+  font-weight: 700;
+  font-family: 'MonarchMono', 'KaiTi', 'STKaiti', 'Noto Serif SC', serif;
+  color: var(--text);
+  line-height: 1.2;
+}
+.hanzi-pinyin {
+  font-size: 15px;
+  color: var(--pink);
+  margin-top: 4px;
+  font-weight: 600;
+}
+.hanzi-radical {
+  font-size: 11px;
+  color: var(--text-light);
+  margin-top: 2px;
+}
+
+/* ====== 练习 ====== */
+.practice-content {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.quiz-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 36px 28px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.quiz-question {
+  font-size: 56px;
+  font-weight: 700;
+  font-family: 'MonarchMono', 'KaiTi', 'Noto Serif SC', serif;
+  margin-bottom: 28px;
+  color: var(--text);
+}
+.quiz-question.pinyin-q {
+  color: var(--pink);
+  font-size: 32px;
+}
+.quiz-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  max-width: 420px;
+}
+.quiz-option {
+  padding: 16px 12px;
+  border: 2px solid #EEE;
+  border-radius: var(--radius-sm);
+  background: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  font-family: 'MonarchMono', 'Noto Serif SC', serif;
+}
+.quiz-option:hover {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+.quiz-option.correct {
+  border-color: #4CAF50;
+  background: #E8F5E9;
+  color: #2E7D32;
+  animation: popIn 0.4s ease;
+}
+.quiz-option.wrong {
+  border-color: #F44336;
+  background: #FFEBEE;
+  color: #C62828;
+  animation: shake 0.5s ease;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+
+.quiz-feedback {
+  margin-top: 20px;
+  font-size: 18px;
+  font-weight: 700;
+  min-height: 28px;
+  text-align: center;
+}
+
+.quiz-controls {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+.btn-primary, .btn-secondary {
+  padding: 12px 32px;
+  border: none;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s;
+  font-family: inherit;
+}
+.btn-primary {
+  background: var(--pink);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(255,107,138,0.35);
+}
+.btn-primary:hover {
+  background: #FF5277;
+  transform: translateY(-2px);
+}
+.btn-secondary {
+  background: #fff;
+  color: var(--text);
+  border: 2px solid #E0E0E0;
+}
+.btn-secondary:hover {
+  border-color: var(--blue);
+  background: var(--blue-light);
+}
+
+.quiz-score {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  font-size: 15px;
+  color: var(--text-light);
+}
+.quiz-score strong {
+  color: var(--text);
+  font-size: 18px;
+}
+
+/* ====== 响应式 ====== */
+@media (max-width: 600px) {
+  .home-cards {
+    grid-template-columns: 1fr;
+  }
+  .hanzi-grid {
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 10px;
+  }
+  .hanzi-char { font-size: 32px; }
+  .quiz-options { grid-template-columns: 1fr; }
+  #view-title { font-size: 18px; }
+  .quiz-question { font-size: 40px; }
+}

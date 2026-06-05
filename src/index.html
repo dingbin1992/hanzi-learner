@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>汉字学习 — 儿童拼音汉字学习</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- ====== 顶部导航栏 ====== -->
+    <header id="top-bar">
+      <button id="btn-back" class="btn-icon" title="返回首页" style="display:none;">🏠</button>
+      <h1 id="view-title">📚 汉字学习</h1>
+      <div id="top-right"></div>
+    </header>
+
+    <!-- ====== 主内容区 ====== -->
+    <main id="main-content">
+
+      <!-- ▸ 视图0：首页 — 三个入口 -->
+      <section id="view-home" class="view active">
+        <div class="home-container">
+          <div class="home-banner">
+            <span class="banner-icon">🌟</span>
+            <h2>欢迎来到汉字学习乐园！</h2>
+            <p>选择下面的入口，开始你的学习之旅吧～</p>
+          </div>
+          <div class="home-cards">
+            <div class="home-card card-pinyin" data-view="pinyin">
+              <span class="card-emoji">🔤</span>
+              <h3>拼音学习</h3>
+              <p>从声母韵母到拼读规则<br>循序渐进学好拼音</p>
+              <span class="card-badge">幼儿 → 进阶</span>
+            </div>
+            <div class="home-card card-hanzi" data-view="hanzi">
+              <span class="card-emoji">📖</span>
+              <h3>汉字识字</h3>
+              <p>新华字典分级字库<br>点击汉字听标准读音</p>
+              <span class="card-badge">幼儿 → 进阶</span>
+            </div>
+            <div class="home-card card-practice" data-view="practice">
+              <span class="card-emoji">✏️</span>
+              <h3>回顾练习</h3>
+              <p>拼音 + 汉字双模式练习<br>检验你的学习成果</p>
+              <span class="card-badge">练习测试</span>
+            </div>
+          </div>
+          <div class="home-footer">
+            <span>📊 已学习：<strong id="learned-count">0</strong> 个字</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ▸ 视图1：拼音学习 -->
+      <section id="view-pinyin" class="view">
+        <div class="level-tabs" id="pinyin-tabs">
+          <button class="level-tab active" data-level="preschool">🌱 幼儿</button>
+          <button class="level-tab" data-level="elementary">📘 小学</button>
+          <button class="level-tab" data-level="advanced">🚀 进阶</button>
+        </div>
+        <div id="pinyin-content" class="pinyin-content"></div>
+      </section>
+
+      <!-- ▸ 视图2：汉字识字 -->
+      <section id="view-hanzi" class="view">
+        <div class="level-tabs" id="hanzi-tabs">
+          <button class="level-tab active" data-level="preschool">🌱 幼儿</button>
+          <button class="level-tab" data-level="elementary">📘 小学</button>
+          <button class="level-tab" data-level="advanced">🚀 进阶</button>
+        </div>
+        <div class="search-bar">
+          <input type="text" id="hanzi-search" placeholder="🔍 搜索汉字或拼音...">
+        </div>
+        <div id="hanzi-grid" class="hanzi-grid"></div>
+      </section>
+
+      <!-- ▸ 视图3：回顾练习 -->
+      <section id="view-practice" class="view">
+        <div class="level-tabs" id="practice-tabs">
+          <button class="level-tab active" data-mode="pinyin">🔤 拼音练习</button>
+          <button class="level-tab" data-mode="hanzi">📖 汉字练习</button>
+        </div>
+        <div id="practice-content" class="practice-content">
+          <div class="quiz-card" id="quiz-card">
+            <div class="quiz-question" id="quiz-question"></div>
+            <div class="quiz-options" id="quiz-options"></div>
+            <div class="quiz-feedback" id="quiz-feedback"></div>
+          </div>
+          <div class="quiz-controls">
+            <button id="btn-next" class="btn-primary" style="display:none;">下一题 ▶</button>
+            <button id="btn-restart" class="btn-secondary">重新开始 🔄</button>
+          </div>
+          <div class="quiz-score">
+            <span>✅ 正确：<strong id="score-correct">0</strong></span>
+            <span>📝 已答：<strong id="score-total">0</strong></span>
+            <span>🏆 最高分：<strong id="score-best">0</strong></span>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- 数据 -->
+  <script src="data/pinyin-data.js"></script>
+  <script src="data/preschool.js"></script>
+  <script src="data/elementary.js"></script>
+  <script src="data/advanced.js"></script>
+  <!-- 逻辑 -->
+  <script src="app.js"></script>
+  <script src="pinyin.js"></script>
+  <script src="hanzi.js"></script>
+  <script src="practice.js"></script>
+</body>
+</html>
