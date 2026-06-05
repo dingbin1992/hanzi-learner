@@ -159,6 +159,7 @@ const HanziModule = {
 
   // 田字格对话框
   showDialog(char, pinyin, radical, strokes) {
+    console.log('=== showDialog 被调用 ===', char);
     const isLearned = App.isLearned(char);
     document.getElementById('dialog-char').textContent = char;
     document.getElementById('dialog-pinyin').textContent = pinyin;
@@ -196,17 +197,22 @@ const HanziModule = {
     // 学笔画按钮
     const strokeBtn = document.getElementById('dialog-stroke');
     const strokeControls = document.getElementById('dialog-stroke-controls');
+    console.log('strokeBtn 元素:', strokeBtn, 'strokeControls:', strokeControls);
+    if (!strokeBtn) {
+      console.error('❌ dialog-stroke 按钮未找到！');
+      return;
+    }
     strokeBtn.onclick = () => {
+      console.log('学笔画按钮点击, char:', char);
       const isVisible = strokeControls.style.display !== 'none';
       if (isVisible) {
-        // 隐藏笔画控制，恢复田字格
         strokeControls.style.display = 'none';
         strokeBtn.textContent = '✏️ 学笔画';
         this.resetTianZiGe(char, isLearned);
       } else {
-        // 显示笔画控制
         strokeControls.style.display = 'block';
         strokeBtn.textContent = '✏️ 关闭笔画';
+        console.log('调用 initStrokeLearning, char:', char);
         this.initStrokeLearning(char);
       }
     };
@@ -228,18 +234,21 @@ const HanziModule = {
   _strokeData: null,
 
   initStrokeLearning(char) {
+    console.log('initStrokeLearning 开始, char:', char);
     const canvas = document.getElementById('dialog-tianzige');
     const ctx = canvas.getContext('2d');
     const self = this;
 
-    // 先通过 XHR 加载笔画数据（不编码中文文件名）
     const xhr = new XMLHttpRequest();
     const url = `../node_modules/hanzi-writer-data/${char}.json`;
+    console.log('XHR 请求 URL:', url);
     xhr.open('GET', url, true);
     xhr.onload = () => {
+      console.log('XHR 响应状态:', xhr.status);
       if (xhr.status === 200) {
         try {
           const data = JSON.parse(xhr.responseText);
+          console.log('笔画数据加载成功, strokes:', data.strokes ? data.strokes.length : 0);
           self._strokeData = data;
           self.totalStrokes = data.strokes ? data.strokes.length : 0;
           document.getElementById('stroke-total').textContent = self.totalStrokes;
@@ -260,9 +269,11 @@ const HanziModule = {
       self._showStrokeError(ctx);
     };
     xhr.send();
+    console.log('XHR 已发送');
   },
 
   _createWriter(canvas, char, data) {
+    console.log('_createWriter 开始, char:', char);
     const self = this;
     try {
       this.writer = HanziWriter.create(canvas, char, {
@@ -273,9 +284,11 @@ const HanziModule = {
         showOutline: true,
         strokeAnimationSpeed: 1.5,
         charDataLoader: (c, onComplete, onError) => {
+          console.log('charDataLoader 被调用, char:', c);
           onComplete(data);
         }
       });
+      console.log('HanziWriter 创建成功');
     } catch(e) {
       console.error('HanziWriter 创建失败:', e);
     }
