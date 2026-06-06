@@ -58,15 +58,7 @@ const PracticeModule = {
 
   // —— 生成题目 ——
   generateQuestion() {
-    // 混用所有级别的字库
-    const allChars = [...preschoolChars, ...elementaryChars, ...advancedChars];
-    // 去重
-    const seen = new Set();
-    const unique = allChars.filter(c => {
-      if (seen.has(c.char)) return false;
-      seen.add(c.char);
-      return true;
-    });
+    const unique = App.getAllUniqueChars();
 
     if (this.mode === 'hanzi') {
       // 汉字练习：看拼音选汉字
@@ -154,9 +146,9 @@ const PracticeModule = {
           document.getElementById('quiz-feedback').style.color = '#4CAF50';
           // 发音
           if (q.type === 'hanzi') {
-            TTS.speak(q.correct, 0.7);
+            TTS.speak(q.correct, 0.85);
           } else {
-            TTS.speak(q.correctChar, 0.7);
+            TTS.speak(q.correctChar, 0.85);
           }
           // 标记已学
           const learnedChar = q.type === 'hanzi' ? q.correct : q.correctChar;
@@ -205,7 +197,9 @@ const PracticeModule = {
     try {
       const raw = localStorage.getItem('hanzi-best-scores');
       if (raw) this.scoreBest = JSON.parse(raw);
-    } catch(e) {}
+    } catch(e) {
+      console.error('加载最佳成绩失败:', e);
+    }
   },
 
   saveBestScore() {
@@ -214,7 +208,9 @@ const PracticeModule = {
       this.scoreBest[key] = this.scoreCorrect;
       try {
         localStorage.setItem('hanzi-best-scores', JSON.stringify(this.scoreBest));
-      } catch(e) {}
+      } catch(e) {
+        console.error('保存最佳成绩失败:', e);
+      }
     }
     this.updateScoreDisplay();
   }

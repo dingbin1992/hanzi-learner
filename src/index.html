@@ -111,12 +111,15 @@
     <button id="dialog-close">✕</button>
     <div class="dialog-body">
       <div class="dialog-left">
-        <canvas id="dialog-tianzige" width="200" height="200"></canvas>
+        <div class="tianzige-wrapper">
+          <canvas id="dialog-tianzige" width="200" height="200"></canvas>
+          <div id="dialog-writer-target" class="writer-target"></div>
+        </div>
         <div class="dialog-canvas-actions">
           <button id="dialog-play" class="btn-dialog-play">🔊 听发音</button>
           <button id="dialog-stroke" class="btn-dialog-stroke">✏️ 学笔画</button>
         </div>
-        <div class="dialog-stroke-controls" id="dialog-stroke-controls" style="display:none;">
+        <div class="dialog-stroke-controls" id="dialog-stroke-controls" style="visibility:hidden;">
           <div class="stroke-progress">第 <span id="stroke-current">0</span> / <span id="stroke-total">0</span> 笔</div>
           <div class="stroke-buttons">
             <button id="stroke-auto" class="btn-stroke-auto">▶ 自动播放</button>

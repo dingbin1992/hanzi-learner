@@ -109,14 +109,33 @@ const App = {
   saveProgress() {
     try {
       localStorage.setItem('hanzi-learned', JSON.stringify([...this.learnedChars]));
-    } catch(e) {}
+    } catch(e) {
+      console.error('保存学习进度失败:', e);
+    }
   },
 
   loadProgress() {
     try {
       const raw = localStorage.getItem('hanzi-learned');
       if (raw) this.learnedChars = new Set(JSON.parse(raw));
-    } catch(e) {}
+    } catch(e) {
+      console.error('加载学习进度失败:', e);
+    }
+  },
+
+  // 获取全部字库（跨级别合并去重）
+  getAllUniqueChars() {
+    const seen = new Set();
+    const all = [];
+    [preschoolChars, elementaryChars, advancedChars].forEach(arr => {
+      arr.forEach(c => {
+        if (!seen.has(c.char)) {
+          seen.add(c.char);
+          all.push(c);
+        }
+      });
+    });
+    return all;
   }
 };
 
@@ -203,12 +222,21 @@ const TTS = {
 
       console.log('✅ 系统可用语音:', voices.map(v => `${v.name} (${v.lang})`).join(', '));
 
-      // 按优先级搜索中文语音
+      // 优先搜索男声，其次女声，最后任意中文语音
       this.chineseVoice =
-        voices.find(v => v.lang === 'zh-CN' && v.name.includes('Microsoft')) ||
-        voices.find(v => v.lang === 'zh-CN' && v.name.includes('Yaoyao')) ||   // Win10 中文女声
-        voices.find(v => v.lang === 'zh-CN' && v.name.includes('Huihui')) ||   // Win10 中文女声
-        voices.find(v => v.lang === 'zh-CN' && v.name.includes('Kangkang')) || // Win10 中文男声
+        // Windows 11 神经男声（自然）
+        voices.find(v => v.lang === 'zh-CN' && v.name.includes('Yunxi')) ||
+        voices.find(v => v.lang === 'zh-CN' && v.name.includes('Yunyang')) ||
+        // Windows 经典男声
+        voices.find(v => v.lang === 'zh-CN' && v.name.includes('Kangkang')) ||
+        // Windows 女声
+        voices.find(v => v.lang === 'zh-CN' && v.name.includes('Yaoyao')) ||
+        voices.find(v => v.lang === 'zh-CN' && v.name.includes('Xiaoxiao')) ||
+        voices.find(v => v.lang === 'zh-CN' && v.name.includes('Huihui')) ||
+        // macOS
+        voices.find(v => v.lang === 'zh-CN' && (v.name.includes('Tingting') || v.name.includes('Sinji'))) ||
+        voices.find(v => v.lang === 'zh-HK' && v.name.includes('Sinji')) ||
+        // 任意中文语音
         voices.find(v => v.lang === 'zh-CN') ||
         voices.find(v => v.lang === 'zh-HK') ||
         voices.find(v => v.lang === 'zh-TW') ||
@@ -233,7 +261,7 @@ const TTS = {
     return text;
   },
 
-  speak(text, rate = 0.9) {
+  speak(text, rate = 0.85) {
     window.speechSynthesis.cancel();
     this.speaking = true;
 
@@ -243,7 +271,7 @@ const TTS = {
     const utt = new SpeechSynthesisUtterance(spokenText);
     utt.lang = 'zh-CN';
     utt.rate = rate;
-    utt.pitch = 1.2;
+    utt.pitch = 1.0;
     // 强制使用中文语音
     if (this.chineseVoice) {
       utt.voice = this.chineseVoice;

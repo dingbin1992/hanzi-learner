@@ -5,10 +5,14 @@
   "main": "main.js",
   "scripts": {
     "start": "electron .",
+    "copy-strokes": "node scripts/copy-strokes.js",
+    "prebuild:win": "npm run copy-strokes",
     "build:win": "electron-builder --win",
+    "prebuild:mac": "npm run copy-strokes",
     "build:mac": "electron-builder --mac",
+    "prebuild:linux": "npm run copy-strokes",
     "build:linux": "electron-builder --linux",
-    "build:all": "electron-builder --win --mac --linux"
+    "build:all": "npm run copy-strokes && electron-builder --win --mac --linux"
   },
   "build": {
     "appId": "com.hanzi.learner",
@@ -22,6 +26,7 @@
       "src/**/*"
     ],
     "win": {
+      "icon": "src/static/icon-256.ico",
       "target": [
         {
           "target": "nsis",

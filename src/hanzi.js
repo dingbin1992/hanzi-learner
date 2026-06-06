@@ -16,21 +16,6 @@ const HanziModule = {
     this.bindDialog();
   },
 
-  // 获取全部字库（跨级别合并去重）
-  getAllChars() {
-    const seen = new Set();
-    const all = [];
-    [preschoolChars, elementaryChars, advancedChars].forEach(arr => {
-      arr.forEach(c => {
-        if (!seen.has(c.char)) {
-          seen.add(c.char);
-          all.push(c);
-        }
-      });
-    });
-    return all;
-  },
-
   bindTabs() {
     const tabs = document.querySelectorAll('#hanzi-tabs .level-tab');
     tabs.forEach(tab => {
@@ -77,6 +62,15 @@ const HanziModule = {
     const closeDialog = () => {
       document.getElementById('hanzi-dialog').classList.remove('active');
       document.getElementById('dialog-overlay').classList.remove('active');
+      // 清理笔画状态
+      if (this.writer) {
+        try { this.writer.cancelAnimation(); } catch(e) {}
+        this.writer = null;
+        this._strokeData = null;
+        this.isStrokeAnimating = false;
+      }
+      const writerTarget = document.getElementById('dialog-writer-target');
+      if (writerTarget) writerTarget.innerHTML = '';
       this.refreshView();
     };
     document.getElementById('dialog-close').addEventListener('click', closeDialog);
@@ -85,13 +79,13 @@ const HanziModule = {
 
   getChars() {
     if (this.currentLevel === 'all' || this.searchQuery) {
-      return this.getAllChars();
+      return App.getAllUniqueChars();
     }
     switch(this.currentLevel) {
       case 'preschool': return preschoolChars;
       case 'elementary': return elementaryChars;
       case 'advanced': return advancedChars;
-      default: return this.getAllChars();
+      default: return App.getAllUniqueChars();
     }
   },
 
@@ -160,6 +154,22 @@ const HanziModule = {
   // 田字格对话框
   showDialog(char, pinyin, radical, strokes) {
     console.log('=== showDialog 被调用 ===', char);
+
+    // 清理上一次的笔画状态，防止多层 SVG 叠加导致闪退
+    if (this.writer) {
+      try { this.writer.cancelAnimation(); } catch(e) {}
+      this.writer = null;
+      this._strokeData = null;
+    }
+    this.isStrokeAnimating = false;
+    const oldTarget = document.getElementById('dialog-writer-target');
+    if (oldTarget) oldTarget.innerHTML = '';
+    // 隐藏笔画控制面板，恢复按钮状态
+    const oldControls = document.getElementById('dialog-stroke-controls');
+    if (oldControls) oldControls.style.visibility = 'hidden';
+    const oldStrokeBtn = document.getElementById('dialog-stroke');
+    if (oldStrokeBtn) oldStrokeBtn.textContent = '✏️ 学笔画';
+
     const isLearned = App.isLearned(char);
     document.getElementById('dialog-char').textContent = char;
     document.getElementById('dialog-pinyin').textContent = pinyin;
@@ -192,7 +202,7 @@ const HanziModule = {
 
     // 播放按钮
     const playBtn = document.getElementById('dialog-play');
-    playBtn.onclick = () => TTS.speak(char, 0.7);
+    playBtn.onclick = () => TTS.speak(char, 0.85);
 
     // 学笔画按钮
     const strokeBtn = document.getElementById('dialog-stroke');
@@ -204,14 +214,16 @@ const HanziModule = {
     }
     strokeBtn.onclick = () => {
       console.log('学笔画按钮点击, char:', char);
-      const isVisible = strokeControls.style.display !== 'none';
+      const isVisible = strokeControls.style.visibility !== 'hidden';
       if (isVisible) {
-        strokeControls.style.display = 'none';
+        strokeControls.style.visibility = 'hidden';
         strokeBtn.textContent = '✏️ 学笔画';
         this.resetTianZiGe(char, isLearned);
       } else {
-        strokeControls.style.display = 'block';
+        strokeControls.style.visibility = 'visible';
         strokeBtn.textContent = '✏️ 关闭笔画';
+        // 隐藏田字格中的字，只留空白格子
+        this.drawTianZiGe(gridCanvas, char, isLearned, false);
         console.log('调用 initStrokeLearning, char:', char);
         this.initStrokeLearning(char);
       }
@@ -223,7 +235,7 @@ const HanziModule = {
     document.getElementById('stroke-auto').onclick = () => this.autoPlayStrokes();
 
     // 初始状态：隐藏笔画控制
-    strokeControls.style.display = 'none';
+    strokeControls.style.visibility = 'hidden';
     strokeBtn.textContent = '✏️ 学笔画';
 
     document.getElementById('hanzi-dialog').classList.add('active');
@@ -236,11 +248,12 @@ const HanziModule = {
   initStrokeLearning(char) {
     console.log('initStrokeLearning 开始, char:', char);
     const canvas = document.getElementById('dialog-tianzige');
+    const writerTarget = document.getElementById('dialog-writer-target');
     const ctx = canvas.getContext('2d');
     const self = this;
 
     const xhr = new XMLHttpRequest();
-    const url = `../node_modules/hanzi-writer-data/${char}.json`;
+    const url = `data/strokes/${char}.json`;
     console.log('XHR 请求 URL:', url);
     xhr.open('GET', url, true);
     xhr.onload = () => {
@@ -254,7 +267,7 @@ const HanziModule = {
           document.getElementById('stroke-total').textContent = self.totalStrokes;
           self.currentStroke = 0;
           document.getElementById('stroke-current').textContent = '0';
-          self._createWriter(canvas, char, data);
+          self._createWriter(writerTarget, char, data);
         } catch(e) {
           console.error('笔画数据解析失败:', e);
           self._showStrokeError(ctx);
@@ -272,11 +285,11 @@ const HanziModule = {
     console.log('XHR 已发送');
   },
 
-  _createWriter(canvas, char, data) {
-    console.log('_createWriter 开始, char:', char);
+  _createWriter(target, char, data) {
+    console.log('_createWriter 开始, char:', char, 'target:', target.id);
     const self = this;
     try {
-      this.writer = HanziWriter.create(canvas, char, {
+      this.writer = HanziWriter.create(target, char, {
         width: 200,
         height: 200,
         padding: 8,
@@ -301,8 +314,9 @@ const HanziModule = {
     ctx.fillStyle = '#999';
     ctx.font = '14px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('暂无笔画数据', 100, 80);
-    ctx.fillText('请尝试常用汉字', 100, 105);
+    ctx.fillText('暂无笔画数据', 100, 75);
+    ctx.fillText('请尝试常用汉字', 100, 100);
+    ctx.fillText('或联系开发者检查数据包', 100, 125);
   },
 
   prevStroke() {
@@ -359,10 +373,12 @@ const HanziModule = {
     }
     this.isStrokeAnimating = false;
     const canvas = document.getElementById('dialog-tianzige');
+    const writerTarget = document.getElementById('dialog-writer-target');
+    writerTarget.innerHTML = '';
     this.drawTianZiGe(canvas, char, isLearned);
   },
 
-  drawTianZiGe(canvas, char, isLearned) {
+  drawTianZiGe(canvas, char, isLearned, showChar = true) {
     const ctx = canvas.getContext('2d');
     const w = canvas.width;
     const h = canvas.height;
@@ -381,23 +397,23 @@ const HanziModule = {
     ctx.strokeStyle = '#D32F2F';
     ctx.lineWidth = 1;
     ctx.setLineDash([6, 4]);
-    // 横线
     ctx.beginPath();
     ctx.moveTo(0, h / 2);
     ctx.lineTo(w, h / 2);
     ctx.stroke();
-    // 竖线
     ctx.beginPath();
     ctx.moveTo(w / 2, 0);
     ctx.lineTo(w / 2, h);
     ctx.stroke();
     ctx.setLineDash([]);
 
-    // 写汉字
-    ctx.fillStyle = '#1A1A1A';
-    ctx.font = `bold ${w * 0.55}px "KaiTi", "STKaiti", "Noto Serif SC", serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(char, w / 2, h / 2);
-  }
+    // 写汉字（笔画学习模式下隐藏）
+    if (showChar) {
+      ctx.fillStyle = '#1A1A1A';
+      ctx.font = `bold ${w * 0.55}px "KaiTi", "STKaiti", "Noto Serif SC", serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(char, w / 2, h / 2);
+    }
+  },
 };

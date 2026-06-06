@@ -73,7 +73,7 @@ const PinyinModule = {
         const text = this.dataset.speak;
         this.classList.add('playing');
         setTimeout(() => this.classList.remove('playing'), 600);
-        TTS.speak(text, 0.7);
+        TTS.speak(text, 0.85);
       });
     });
   }

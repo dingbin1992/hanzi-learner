@@ -2,7 +2,7 @@
 /* ====== 本地字体 ====== */
 @font-face {
   font-family: 'MonarchMono';
-  src: url('MonarchMono-SemiBold.ttf') format('truetype');
+  src: url('static/MonarchMono-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
 }
@@ -541,9 +541,27 @@ body {
 .dialog-left {
   text-align: center;
 }
+/* 田字格+笔画层叠容器 */
+.tianzige-wrapper {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  display: inline-block;
+}
+.writer-target {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  height: 200px;
+}
+.writer-target svg {
+  display: block;
+}
 #dialog-tianzige {
   border-radius: 8px;
   box-shadow: var(--shadow);
+  display: block;
 }
 /* 田字形 2x2 网格 */
 .dialog-info-grid {
@@ -674,6 +692,8 @@ body {
 .dialog-stroke-controls {
   margin-top: 10px;
   text-align: center;
+  min-height: 55px;
+  visibility: hidden;
 }
 .stroke-progress {
   font-size: 13px;
